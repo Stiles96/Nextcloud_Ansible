@@ -1,0 +1,51 @@
+---
+- name: Setup System
+  become: true
+  hosts: nextcloud
+  tags:
+    - system
+  roles:
+    - system
+
+- name: Setup Apache2
+  become: true
+  hosts: nextcloud
+  tags:
+    - apache2
+  roles:
+    - apache2
+  vars_files:
+    - vars.yaml
+
+- name: Setup MySQL Server
+  become: true
+  hosts: nextcloud
+  tags:
+    - mysql
+  roles:
+    - mysql
+  vars_files:
+    - vars.yaml
+    - passwords.yaml
+
+- name: Setup Nextcloud
+  become: true
+  hosts: nextcloud
+  tags:
+    - nextcloud
+  roles:
+    - nextcloud
+  vars_files:
+    - vars.yaml
+    - passwords.yaml
+
+- name: Setup OnlyOffice
+  become: true
+  hosts: nextcloud
+  tags:
+    - onlyoffice
+  roles:
+    - docker
+    - onlyoffice
+  vars_files:
+    - vars.yaml

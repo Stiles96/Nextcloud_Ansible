@@ -1,0 +1,39 @@
+---
+- name: start a onlyoffice container
+  docker_container:
+    name: onlyoffice
+    image: onlyoffice/documentserver
+    state: started
+    restart: yes
+    restart_policy: always
+    interactive: true
+    tty: yes
+    ports:
+     - "{{ onlyoffice_ssl_port }}:443"
+    env:
+      ONLYOFFICE_HTTPS_HSTS_ENABLED: 'false'
+      JWT_ENABLED:  'true'
+      JWT_SECRET:   "{{ lookup('password', '{{ credential_store }}/onlyoffice_secret chars=ascii_letters,digits length=32') }}"
+      USE_UNAUTHORIZED_STORAGE: 'true'
+    volumes:        '{{ onlyoffice_volumes }}'
+
+- name: install onlyoffice app
+  shell: sudo -u www-data php /var/www/nextcloud/occ app:install onlyoffice
+  ignore_errors: true
+  
+- name: enable onlyoffice app
+  shell: sudo -u www-data php /var/www/nextcloud/occ app:enable onlyoffice
+  
+- name: set onlyoffice server url
+  shell: sudo -u www-data php /var/www/nextcloud/occ config:app:set onlyoffice DocumentServerUrl --value https://{{ external_url }}:{{ onlyoffice_ssl_port }}
+
+- name: set onlyoffice server secret
+  shell: sudo -u www-data php /var/www/nextcloud/occ config:app:set onlyoffice jwt_secret --value {{ lookup('password', '{{ credential_store }}/onlyoffice_secret chars=ascii_letters,digits length=32') }}
+
+- name: set onlyoffice cert check off
+  shell: sudo -u www-data php /var/www/nextcloud/occ config:system:set onlyoffice verify_peer_off --value=true --type=boolean
+
+- name: certbot copy certificate
+  template:
+    src: "onlyoffice.sh.j2"
+    dest: "/etc/letsencrypt/renewal-hooks/post/onlyoffice.sh"

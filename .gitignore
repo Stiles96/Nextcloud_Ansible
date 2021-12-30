@@ -1,0 +1,10 @@
+*.retry
+~$*
+tmp/
+!tmp/.gitkeep
+.vaultpw
+.DS_Store
+collections/*
+!collections/requirements.yml
+.vscode
+.vagrant

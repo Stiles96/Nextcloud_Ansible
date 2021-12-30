@@ -1,0 +1,14 @@
+---
+- name: install PyMySQL
+  pip: 
+    name: PyMySQL
+    state: latest
+
+- name: Create Database 
+  shell: mysql -e "CREATE DATABASE IF NOT EXISTS {{ db_name }};"
+
+- name: Create User 
+  shell: mysql -e "CREATE USER IF NOT EXISTS '{{ db_user }}'@'localhost' IDENTIFIED BY '{{ db_pw }}';"
+
+- name: Permit User to Database
+  shell: mysql -e "GRANT ALL ON {{ db_name }}.* TO '{{ db_user }}'@'localhost';"

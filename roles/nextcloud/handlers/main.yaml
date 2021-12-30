@@ -1,0 +1,5 @@
+---
+- name: Restart notify_push
+  service:
+    name: "notify_push"
+    state: restarted

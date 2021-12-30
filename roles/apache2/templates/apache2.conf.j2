@@ -1,0 +1,52 @@
+<VirtualHost *:80>
+        ServerName {{ inventory_hostname }}
+        ServerAlias {{ server_alias }}
+        DocumentRoot /var/www/nextcloud/
+        RewriteEngine On
+        RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+        Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+
+    <Directory /var/www/nextcloud/>
+        Require all granted
+        AllowOverride All
+        Options FollowSymLinks MultiViews
+
+        <IfModule mod_dav.c>
+            Dav off
+        </IfModule>
+    </Directory>
+</VirtualHost>
+
+<VirtualHost *:443>
+        SSLEngine On
+
+        ServerName {{ inventory_hostname }}
+        ServerAlias {{ server_alias }}
+        #ExternalURLs
+
+        ServerAdmin IT-Service@Henkelmann.ddnss.de
+        DocumentRoot /var/www/nextcloud/
+
+        Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+
+    <Directory /var/www/nextcloud/>
+        Require all granted
+        AllowOverride All
+        Options FollowSymLinks MultiViews
+
+        <IfModule mod_dav.c>
+            Dav off
+        </IfModule>
+    </Directory>
+
+        ErrorLog /error.log
+        CustomLog /access.log combined
+
+        ProxyPass /push/ws ws://127.0.0.1:7867/ws
+        ProxyPass /push/ http://127.0.0.1:7867/
+        ProxyPassReverse /push/ http://127.0.0.1:7867/
+
+Include /etc/letsencrypt/options-ssl-apache.conf
+        SSLCertificateFile /etc/letsencrypt/live/<keyname>/fullchain.pem
+SSLCertificateKeyFile /etc/letsencrypt/live/<keyname>/privkey.pem
+</VirtualHost>

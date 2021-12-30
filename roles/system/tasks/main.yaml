@@ -1,0 +1,84 @@
+---
+- name: Install Packages Apache 2
+  apt:
+    pkg:
+    - apache2
+    - certbot
+    - python3-certbot-apache
+    state: present
+    update_cache: yes
+
+- name: Install Packages MySQL
+  apt:
+    pkg:
+    - mysql-server
+    - mysql-client
+    state: present
+    update_cache: yes
+
+- name: Install Packages PHP
+  apt:
+    pkg:
+    - libapache2-mod-php7.4
+    - php7.4-gd
+    - php7.4-mysql
+    - php7.4-curl
+    - php7.4-mbstring
+    - php7.4-intl
+    - php7.4-gmp
+    - php7.4-bcmath
+    - php-imagick
+    - php7.4-xml
+    - php7.4-zip
+    - php7.4-ldap
+    - php7.4-opcache
+    - php7.4-cli
+    - php7.4-apcu
+    - imagemagick
+    - libmagickcore-6.q16-6-extra
+    - php7.4-fpm
+    - redis-server
+    - php7.4-redis
+    - php7.4-pdlib
+    - php7.4-bz2
+    state: present
+    update_cache: yes
+
+- name: Install Packages PIP and SMB
+  apt:
+    pkg:
+    - python3-pip
+    - php-pear
+    - php7.4-dev
+    - libsmbclient-dev
+    update_cache: yes
+
+- name: Install libsmbclient-php pear package
+  community.general.pear:
+    name: smbclient
+    state: present
+  ignore_errors: yes
+
+- name: Create Folder
+  file:
+    path: '{{ item }}'
+    owner: www-data
+    group: www-data
+    mode: '0775'
+    state: directory
+    recurse: yes
+  with_items:
+    - /var/www/nextcloud
+    - /var/www/nextcloud/data
+    - /var/www/nextcloud/data/skeleton
+    - /var/www/nextcloud/data/skeleton/External
+
+- name: Add OnlyOffice apt key
+  ansible.builtin.apt_key:
+    keyserver: hkp://keyserver.ubuntu.com:80
+    id: CB2DE8E5
+
+- name: Add OnlyOffice Repository
+  apt_repository:
+    repo: deb https://download.onlyoffice.com/repo/debian squeeze main
+    state: present

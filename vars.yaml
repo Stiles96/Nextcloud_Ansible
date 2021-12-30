@@ -1,0 +1,200 @@
+db_name: nextcloud
+db_user: nextcloud
+server_alias: cloud.domain.local
+admin_mail: IT-Service@example.com
+external_url: cloud.example.com
+
+trusted_domains:
+  - Cloud.domain.local
+  - cloud.example.com
+  - 127.0.0.1
+  - "::1"
+
+external_domains:
+  - cloud.example.com
+
+mail_from: cloud
+mail_smtpmode: smtp
+mail_smtpauthtype: LOGIN
+mail_domain: example.com
+mail_smtpname: username
+mail_smtpsecure: tls
+mail_smtpauth: 1
+mail_smtphost: server
+mail_smtpport: 25
+
+install_apps:
+  - twofactor_totp
+  - files_external
+  - twofactor_admin
+  - drawio
+  - duplicatefinder
+  - user_ldap
+  - facerecognition
+  - notify_push
+
+remove_apps:
+  -  dashboard
+
+quota: "10 GB"
+
+hasMemberOfFilterSupport     : 1                                                                                                                                                                                                                                      
+homeFolderNamingRule         :                                                                                                                                                                                                                                        
+lastJpegPhotoLookup          : 0                                                                                                                                                                                                                                      
+ldapAgentName                : CN=SVC LDAP,...
+ldapAttributesForGroupSearch :                                                                                                                                                                                                                                        
+ldapAttributesForUserSearch  :                                                                                                                                                                                                                                        
+ldapBackupHost               :                                                                                                                                                                                                                                        
+ldapBackupPort               :                                                                                                                                                                                                                                        
+ldapBase                     : DC=domain,DC=local                                                                                                                                                                                                                    
+ldapBaseGroups               : DC=domain,DC=local                                                                                                                                                                                                                    
+ldapBaseUsers                : DC=domain,DC=local                                                                                                                                                                                                                    
+ldapCacheTTL                 : 600                                                                                                                                                                                                                                    
+ldapConfigurationActive      : 1                                                                                                                                                                                                                                      
+ldapDefaultPPolicyDN         :                                                                                                                                                                                                                                        
+ldapDynamicGroupMemberURL    :                                                                                                                                                                                                                                        
+ldapEmailAttribute           : mail                                                                                                                                                                                                                                   
+ldapExperiencedAdmin         : 0                                                                                                                                                                                                                                      
+ldapExpertUUIDGroupAttr      :                                                                                                                                                                                                                                        
+ldapExpertUUIDUserAttr       :                                                                                                                                                                                                                                        
+ldapExpertUsernameAttr       :                                                                                                                                                                                                                                        
+ldapExtStorageHomeAttribute  :                                                                                                                                                                                                                                        
+ldapGidNumber                : gidNumber                                                                                                                                                                                                                              
+ldapGroupDisplayName         : cn                                                                                                                                                                                                                                     
+ldapGroupFilter              : (&(|(objectclass=group)(objectclass=top))(|(cn=ACC-Cloud_User)))                                                                                                                                                                                        
+ldapGroupFilterGroups        : ACC-Cloud_User                                                                                                                                                                                                                         
+ldapGroupFilterMode          : 0                                                                                                                                                                                                                                      
+ldapGroupFilterObjectclass   : group                                                                                                                                                                                                                                  
+ldapGroupMemberAssocAttr     : member                                                                                                                                                                                                                                 
+ldapHost                     : domain.local                                                                                                                                                                                                                          
+ldapIgnoreNamingRules        :                                                                                                                                                                                                                                        
+ldapLoginFilter              : (&(&(|(objectclass=person)(objectclass=user))(|(|(memberof=CN=ACC-Cloud_User,OU=Groups,DC=domain,DC=local)(primaryGroupID=9640))))(|(samaccountname=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid)))) 
+ldapLoginFilterAttributes    :                                                                                                                                                                                                                                        
+ldapLoginFilterEmail         : 1                                                                                                                                                                                                                                      
+ldapLoginFilterMode          : 0                                                                                                                                                                                                                                      
+ldapLoginFilterUsername      : 1                                                                                                                                                                                                                                      
+ldapMatchingRuleInChainState : unknown                                                                                                                                                                                                                                
+ldapNestedGroups             : 0                                                                                                                                                                                                                                      
+ldapOverrideMainServer       :                                                                                                                                                                                                                                        
+ldapPagingSize               : 500                                                                                                                                                                                                                                    
+ldapPort                     : 389                                                                                                                                                                                                                                    
+ldapQuotaAttribute           :                                                                                                                                                                                                                                        
+ldapQuotaDefault             :                                                                                                                                                                                                                                        
+ldapTLS                      : 0                                                                                                                                                                                                                                      
+ldapUserAvatarRule           : default                                                                                                                                                                                                                                
+ldapUserDisplayName          : displayname                                                                                                                                                                                                                            
+ldapUserDisplayName2         :                                                                                                                                                                                                                                        
+ldapUserFilter               : (&(|(objectclass=person)(objectclass=user))(|(|(memberof=CN=ACC-Cloud_User,OU=Groups,DC=domain,DC=local)(primaryGroupID=9640))))                                                                   
+ldapUserFilterGroups         : ACC-Cloud_User                                                                                                                                                                                                                         
+ldapUserFilterMode           : 0                                                                                                                                                                                                                                      
+ldapUserFilterObjectclass    : person;user                                                                                                                                                                                                                            
+ldapUuidGroupAttribute       : auto                                                                                                                                                                                                                                   
+ldapUuidUserAttribute        : auto                                                                                                                                                                                                                                   
+turnOffCertCheck             : 0                                                                                                                                                                                                                                      
+turnOnPasswordChange         : 0                                                                                                                                                                                                                                      
+useMemberOfToDetectMembership: 1
+
+onlyoffice_ssl_port: 8443
+credential_store: "/tmp/nextcloud"
+
+onlyoffice_volumes:
+  - '/etc/letsencrypt/live/<keyname>/privkey.pem:/var/www/onlyoffice/Data/certs/onlyoffice.key:ro'
+  - '/etc/letsencrypt/live/<keyname>/fullchain.pem:/var/www/onlyoffice/Data/certs/onlyoffice.crt:ro'
+#  - '{{ dhparam_path }}:/var/www/onlyoffice/Data/certs/dhparam.pem:ro'
+
+files_external_mountpoints:
+- { 
+    mountpoint: "/External/Gemeinsam", 
+    storage_type: "smb" ,
+    auth_type: "password::sessioncredentials",
+    host: "",
+    share: "",
+    root: "",
+    domain: "domain.local",
+    show_hidden: "true",
+    check_acl: "true"
+  }
+- { 
+    mountpoint: "/External/Eigene Dateien", 
+    storage_type: "smb" ,
+    auth_type: "password::sessioncredentials",
+    host: "",
+    share: "",
+    root: "users/$user",
+    domain: "domain.local",
+    show_hidden: "true",
+    check_acl: "true"
+  }
+
+theming_config:
+- { key: name, value: "HE IT-Service"}
+- { key: "privacyUrl", value: "https://www.example.com/index.php/de/impressum/datenschutzerklaerung"}
+- { key: "imprintUrl", value: "https://www.example.com/index.php/de/impressum"}
+- { key: "url", value: "https://cloud.example.com"}
+
+core_config:
+- { key: "shareapi_default_expire_date", value: "yes"}
+- { key: "shareapi_enforce_links_password", value: "yes"}
+- { key: "shareapi_expire_after_n_days", value: "365"}
+
+php_settings:
+- { line: 'extension=smbclient.so', after: ';extension=xsl', value: 'extension=smbclient.so'}
+- { line: '^memory_limit = ', after: ^; http://php.net/memory-limit, value: 'memory_limit = 4096M'}
+
+opcache:
+- { line: 'opcache.enable=', after: '; Determines if Zend OPCache is enabled', value: 'opcache.enable=1'}
+- { line: 'opcache.interned_strings_buffer', after: '; The amount of memory for interned strings in Mbytes.', value: 'opcache.interned_strings_buffer=8'}
+- { line: 'opcache.max_accelerated_files', after: '; Only numbers between 200 and 1000000 are allowed.', value: 'opcache.max_accelerated_files=10000'}
+- { line: 'opcache.memory_consumption', after: '; The OPcache shared memory storage size.', value: 'opcache.memory_consumption=128'}
+- { line: 'opcache.save_comments', after: '; size of the optimized code.', value: 'opcache.save_comments=1'}
+- { line: 'opcache.revalidate_freq', after: "; once per request. ", value: 'opcache.revalidate_freq=1'}
+- { line: 'apc.enabled=', value: 'apc.enabled=1'}
+- { line: 'apc.file_update_protection=', value: 'apc.file_update_protection=2'}
+- { line: 'apc.optimization=', value: 'apc.optimization=0'}
+- { line: 'apc.shm_size=', value: 'apc.shm_size=256M'}
+- { line: 'apc.include_once_override=', value: 'apc.include_once_override=0'}
+- { line: 'apc.shm_segments=', value: 'apc.shm_segments=1'}
+- { line: 'apc.ttl=', value: 'apc.ttl=7200'}
+- { line: 'apc.user_ttl=', value: 'apc.user_ttl=7200'}
+- { line: 'apc.gc_ttl=', value: 'apc.gc_ttl=3600'}
+- { line: 'apc.num_files_hint=', value: 'apc.num_files_hint=1024'}
+- { line: 'apc.enable_cli=', value: 'apc.enable_cli=1'}
+- { line: 'apc.max_file_size=', value: 'apc.max_file_size=5M'}
+- { line: 'apc.cache_by_default=', value: 'apc.cache_by_default=1'}
+- { line: 'apc.use_request_time=', value: 'apc.use_request_time=1'}
+- { line: 'apc.slam_defense=', value: 'apc.slam_defense=0'}
+- { line: 'apc.stat_ctime=', value: 'apc.stat_ctime=0'}
+- { line: 'apc.canonicalize=', value: 'apc.canonicalize=1'}
+- { line: 'apc.write_lock=', value: 'apc.write_lock=1'}
+- { line: 'apc.report_autofilter=', value: 'apc.report_autofilter=0'}
+- { line: 'apc.rfc1867=', value: 'apc.rfc1867=0'}
+- { line: 'apc.rfc1867_prefix=', value: 'apc.rfc1867_prefix=upload_'}
+- { line: 'apc.rfc1867_name=', value: 'apc.rfc1867_name=APC_UPLOAD_PROGRESS'}
+- { line: 'apc.rfc1867_freq=', value: 'apc.rfc1867_freq=0'}
+- { line: 'apc.rfc1867_ttl=', value: 'apc.rfc1867_ttl=3600'}
+- { line: 'apc.lazy_classes=', value: 'apc.lazy_classes=0'}
+- { line: 'apc.lazy_functions=', value: 'apc.lazy_functions=0'}
+#- { line: 'apc.mmap_file_mask=', value: '# apc.mmap_file_mask=/tmp/apc/apc.5.1.18'}
+
+fpm:
+- { line: 'pm = ', after: '; Note: This value is mandatory.', value: 'pm = dynamic'}
+- { line: 'pm.max_children =', after: '; Note: This value is mandatory.', value: 'pm.max_children = 120'}
+- { line: 'pm.start_servers = ', after: '; Default Value: (min_spare_servers + max_spare_servers)', value: 'pm.start_servers = 12'}
+- { line: 'pm.min_spare_servers = ', after: '; Note: Mandatory when pm is set to', value: 'pm.min_spare_servers = 6'}
+- { line: 'pm.max_spare_servers = ', after: "; Note: Mandatory when pm is set to", value: 'pm.max_spare_servers = 18'}
+
+redis:
+- { line: '^port ', value: 'port 0'}
+- { line: 'unixsocketperm ', value: 'unixsocketperm 770'}
+- { line: 'unixsocket ', value: 'unixsocket /var/run/redis/redis-server.sock'}
+- { line: '# maxclients ', value: 'maxclients 512'}
+
+redis_conf:
+- { key: 'host', value: '/var/run/redis/redis-server.sock'}
+- { key: 'port', value: '0'}
+- { key: 'dbindex', value: '0'}
+- { key: 'timeout', value: '1.5'}
+
+face_config:
+- { key: 'min_confidence', value: '0.99'}
+- { key: 'analysis_image_area', value: '474000'}

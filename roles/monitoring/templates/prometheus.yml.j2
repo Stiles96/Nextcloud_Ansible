@@ -1,0 +1,81 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+alerting:
+  alertmanagers:
+  - follow_redirects: true
+    scheme: http
+    timeout: 10s
+    api_version: v2
+    static_configs:
+    - targets: []
+scrape_configs:
+- job_name: prometheus
+  honor_timestamps: true
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  metrics_path: /metrics
+  scheme: http
+  follow_redirects: true
+  static_configs:
+  - targets:
+    - localhost:9090
+- job_name: Cloud-Server
+  honor_timestamps: true
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  metrics_path: /metrics
+  scheme: http
+  follow_redirects: true
+  static_configs:
+  - targets:
+    - 10.96.166.12:9205
+
+- job_name: node_exporter
+  honor_timestamps: true
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  metrics_path: /metrics
+  scheme: http
+  follow_redirects: true
+  basic_auth:
+      username: 'monitoring'
+      password: 'ajhglskvj768vsfdvidgkjsa786098zCXfghaifdg7868d'
+  static_configs:
+  - targets:
+    - Cloud-Server.Zuhause.local:9100
+    - W-Cloud-Server.Zuhause.local:9100
+    - Wiki-Server.Zuhause.local:9100
+    - Pi-Hole-Server.Zuhause.local:9100
+    - W-Pi-Hole-Server.Zuhause.local:9100
+    - MySQL-Server.Zuhause.local:9100
+    - SQL-Server.Zuhause.local:9100
+    - Plex-Server.Zuhause.local:9100
+    - Monitoring.Zuhause.local:9100
+
+- job_name: node_exporter_cloud
+  honor_timestamps: true
+  scrape_interval: 60s
+  scrape_timeout: 10s
+  metrics_path: /metrics
+  scheme: http
+  follow_redirects: true
+  basic_auth:
+      username: 'monitoring'
+      password: 'ajhglskvj768vsfdvidgkjsa786098zCXfghaifdg7868d'
+  static_configs:
+  - targets:
+    - A-Web-Server.Zuhause.local:9100
+
+    
+#- job_name: W-Cloud-Server
+#  honor_timestamps: true
+#  scrape_interval: 15s
+#  scrape_timeout: 10s
+#  metrics_path: /metrics
+#  scheme: http
+#  follow_redirects: true
+#  static_configs:
+#  - targets:
+#    - 10.97.166.11:9205

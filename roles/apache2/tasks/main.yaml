@@ -1,4 +1,9 @@
 ---
+- name: Check if let's encrypt cert exist
+  stat:
+    path: /etc/letsencrypt/options-ssl-apache.conf
+  register: stat_result
+
 - name: Create Apache2 Config File
   template:
     src: "apache2.conf.j2"
@@ -47,8 +52,21 @@
 - name: Disabale modules
   shell: /usr/sbin/a2dismod {{ item }}
   with_items:
-    - php7.4
+    - php{{ php_version }}
+    - php{{ old_php_version }}
     - mpm_prefork
+  notify: "Restart Apache"
+
+- name: Disable old php-fpm
+  shell: /usr/sbin/a2disconf {{ item }}
+  with_items:
+    - php{{ old_php_version }}-fpm
+  notify: "Restart Apache"
+
+- name: Enable php-fpm
+  shell: /usr/sbin/a2enconf {{ item }}
+  with_items:
+    - php{{ php_version }}-fpm
   notify: "Restart Apache"
 
 - name: Enable modules
@@ -71,7 +89,7 @@
 
 - name: Set PHP.ini Settings
   lineinfile:
-    path: /etc/php/7.4/cli/php.ini
+    path: /etc/php/{{ php_version }}/cli/php.ini
     regexp: '{{ item.line }}'
     insertafter: '{{ item.after }}'
     line: '{{ item.value }}'
@@ -83,7 +101,7 @@
   
 - name: Set PHP.ini Settings
   lineinfile:
-    path: /etc/php/7.4/apache2/php.ini
+    path: /etc/php/{{ php_version }}/apache2/php.ini
     regexp: '{{ item.line }}'
     insertafter: '{{ item.after }}'
     line: '{{ item.value }}'
@@ -95,7 +113,7 @@
 
 - name: Set PHP.ini Settings
   lineinfile:
-    path: /etc/php/7.4/fpm/php.ini
+    path: /etc/php/{{ php_version }}/fpm/php.ini
     regexp: '{{ item.line }}'
     insertafter: '{{ item.after }}'
     line: '{{ item.value }}'
@@ -107,7 +125,7 @@
 
 - name: Config opcache
   lineinfile:
-    path: /etc/php/7.4/apache2/php.ini
+    path: /etc/php/{{ php_version }}/apache2/php.ini
     regexp: '{{ item.line }}'
     #insertafter: '^{{ item.after }}'
     line: '{{ item.value }}'
@@ -117,7 +135,7 @@
 
 - name: Config opcache
   lineinfile:
-    path: /etc/php/7.4/fpm/php.ini
+    path: /etc/php/{{ php_version }}/fpm/php.ini
     regexp: '{{ item.line }}'
     #insertafter: '^{{ item.after }}'
     line: '{{ item.value }}'
@@ -127,7 +145,7 @@
 
 - name: Config opcache
   lineinfile:
-    path: /etc/php/7.4/cli/php.ini
+    path: /etc/php/{{ php_version }}/cli/php.ini
     regexp: '{{ item.line }}'
     #insertafter: '^{{ item.after }}'
     line: '{{ item.value }}'
@@ -137,19 +155,13 @@
 
 - name: Config FPM
   lineinfile:
-    path: /etc/php/7.4/fpm/pool.d/www.conf
+    path: /etc/php/{{ php_version }}/fpm/pool.d/www.conf
     regexp: '^{{ item.line }}'
     insertafter: '^{{ item.after }}'
     line: '{{ item.value }}'
     state: present
   with_items: "{{ fpm }}"
   notify: "Restart PHP-FPM"
-
-- name: Enable FPM
-  shell: /usr/sbin/a2enconf {{ item }}
-  with_items:
-    - php7.4-fpm
-  notify: "Restart Apache"
 
 - name: Configure Redis
   lineinfile:
@@ -165,6 +177,9 @@
     name: 'www-data'
     groups: redis
     append: yes
+  notify: Restart Redis
 
 - name: Get Lets encrypt certificate
   shell: "certbot renew --dry-run"
+  ignore_errors: yes
+  when: stat_result.stat.exists

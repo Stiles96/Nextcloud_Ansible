@@ -1,3 +1,3 @@
 #!/bin/sh
-cp /etc/letsencrypt/live/<keyname>/privkey.pem /app/onlyoffice/DocumentServer/data/certs/onlyoffice.key
-cp /etc/letsencrypt/live/<keyname>/fullchain.pem /app/onlyoffice/DocumentServer/data/certs/onlyoffice.crt
+cp /etc/letsencrypt/live/{{ external_url }}/privkey.pem /app/onlyoffice/DocumentServer/data/certs/onlyoffice.key
+cp /etc/letsencrypt/live/{{ external_url }}/fullchain.pem /app/onlyoffice/DocumentServer/data/certs/onlyoffice.crt

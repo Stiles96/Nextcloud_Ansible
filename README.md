@@ -9,7 +9,7 @@ The runbook install nextcloud with the following addons:
 - mail service
 - twofactor_totp
 - drawio
-- facerecognition
+- recognition
 - external files include smb/cifs
 
 # Run the playbook

@@ -5,6 +5,7 @@
         RewriteEngine On
         RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
         Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+        Protocols h2 h2c http/1.1
 
     <Directory /var/www/nextcloud/>
         Require all granted
@@ -19,7 +20,13 @@
 
 <VirtualHost *:443>
         SSLEngine On
-
+        {% if stat_result.stat.exists %}
+        #SSLCertificateFile /etc/ssl/certs/{{ inventory_hostname }}.crt
+        #SSLCertificateKeyFile /etc/ssl/private/{{ inventory_hostname }}.key
+        {% else %}
+        SSLCertificateFile /etc/ssl/certs/{{ inventory_hostname }}.crt
+        SSLCertificateKeyFile /etc/ssl/private/{{ inventory_hostname }}.key
+        {% endif %}
         ServerName {{ inventory_hostname }}
         ServerAlias {{ server_alias }}
         #ExternalURLs
@@ -28,6 +35,7 @@
         DocumentRoot /var/www/nextcloud/
 
         Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+        Protocols h2 h2c http/1.1
 
     <Directory /var/www/nextcloud/>
         Require all granted
@@ -46,7 +54,9 @@
         ProxyPass /push/ http://127.0.0.1:7867/
         ProxyPassReverse /push/ http://127.0.0.1:7867/
 
+{% if stat_result.stat.exists %}
 Include /etc/letsencrypt/options-ssl-apache.conf
-        SSLCertificateFile /etc/letsencrypt/live/<keyname>/fullchain.pem
-SSLCertificateKeyFile /etc/letsencrypt/live/<keyname>/privkey.pem
+        SSLCertificateFile /etc/letsencrypt/live/{{ external_url }}/fullchain.pem
+SSLCertificateKeyFile /etc/letsencrypt/live/{{ external_url }}/privkey.pem
+{% endif %}
 </VirtualHost>

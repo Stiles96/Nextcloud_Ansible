@@ -1,9 +1,19 @@
 ---
 all:
   hosts:
-    Cloud.domain.local:
-      ansible_host: 10.0.0.0
+    W-Cloud-Server.Zuhause.local:
+      ansible_host: 10.97.166.11
+    Cloud-Server.Zuhause.local:
+      ansible_host: 10.96.166.12
+      data_directoy: /mnt/nextcloud_data/data
+      ext_device: /dev/sdb1
+    Monitoring.Zuhause.local:
+      ansible_host: 10.96.100.28
   children:
     nextcloud:
       hosts:
-        Cloud.domain.local:
+        Cloud-Server.Zuhause.local:
+        W-Cloud-Server.Zuhause.local:
+    monitoring:
+      hosts:
+        Monitoring.Zuhause.local:

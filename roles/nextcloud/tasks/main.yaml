@@ -1,10 +1,12 @@
 ---
 - name: Download Nextcloud
+  become: true
   get_url:
     url: https://download.nextcloud.com/server/releases/latest.tar.bz2
     dest: /tmp
 
 - name: Extract Nextcloud
+  become: true
   unarchive:
     src: /tmp/latest.tar.bz2
     dest: /var/www/
@@ -12,6 +14,7 @@
     creates: /var/www/nextcloud/occ
 
 - name: Set Permissions
+  become: true
   file:
     path: /var/www/nextcloud
     owner: www-data
@@ -21,7 +24,9 @@
     recurse: yes
 
 - name: Install Nextcloud
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ maintenance:install 
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ maintenance:install 
       --database mysql
       --database-host "localhost" 
       --database-name {{ db_name }} 
@@ -31,138 +36,203 @@
       --admin-pass {{ admin_pw }}'
   ignore_errors: yes
 
-- name: Set Nextcloud Domain
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:system:set {{ item.key }} {{ item.value }}'
+- name: Set Nextcloud config
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:system:set {{ item.key }} {{ item.value }}'
   with_items: "{{ nc_config }}"
 
 - name: Set Nextcloud Domains
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:system:set trusted_domains {{ index }} --value={{ item }}'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:system:set trusted_domains {{ index }} --value={{ item }}'
   with_items: "{{ trusted_domains }}"
   loop_control:
     index_var: index
 
 - name: Set Nextcloud Proxies
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:system:set trusted_proxies {{ index }} --value={{ item }}'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:system:set trusted_proxies {{ index }} --value={{ item }}'
   with_items: "{{ trusted_domains }}"
   loop_control:
     index_var: index
 
 - name: Set Nextcloud Secret
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:system:set secret  --value {{ nc_secret }}'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:system:set secret  --value {{ nc_secret }}'
 
 - name: Set Admin Mail
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ user:setting admin settings email {{ admin_mail }}'
+  become: true
+  become_user: www-data
+  shell: '/var/www/nextcloud/occ user:setting admin settings email {{ admin_mail }}'
 
 - name: Set Nextcloud Mail Settings
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:system:set {{ item.key }} {{ item.value }}'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:system:set {{ item.key }} {{ item.value }}'
   with_items: "{{ nc_mail_config }}"
 
 - name: Upgrade
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ upgrade'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ upgrade'
 
 - name: add nextcloud cronjob
+  become: true
   cron:
     name: nextcloud cronjob
-    minute: '*/5'
+    minute: '*/60'
     user: www-data
     job: "php -f /var/www/nextcloud/cron.php > /dev/null 2>&1"
 
 - name: run nextcloud cronjob
-  shell: 'sudo -u www-data php -f /var/www/nextcloud/cron.php'
+  become: true
+  become_user: www-data
+  shell: 'php -f /var/www/nextcloud/cron.php'
 
 - name: Add Apps
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ app:install {{ item }}'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ app:install {{ item }}'
   with_items: "{{ install_apps }}"
   ignore_errors: yes
 
 - name: Enable Apps
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ app:enable {{ item }}'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ app:enable {{ item }}'
   with_items: "{{ install_apps }}"
   ignore_errors: yes
 
 - name: Create notify_push Service
+  become: true
   template:
     src: "notify_push.service.j2"
     dest: "/etc/systemd/system/notify_push.service"
   notify: "Restart notify_push"
 
 - name: Start notify push service
+  become: true
   service:
     name: "notify_push"
     state: started
     enabled: yes
 
 - name: Disable Apps
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ app:disable {{ item }}'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ app:disable {{ item }}'
   with_items: "{{ remove_apps }}"
   ignore_errors: yes
 
 - name: Remove Apps
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ app:remove {{ item }}'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ app:remove {{ item }}'
   with_items: "{{ remove_apps }}"
   ignore_errors: yes
 
 - name: Set LDAP Config
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ ldap:set-config "s01" "{{ item.key }}" "{{ item.value }}"'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ ldap:set-config "s01" "{{ item.key }}" "{{ item.value }}"'
   with_items: "{{ nc_ldap_config }}"
 
 - name: Set Default Quota
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:app:set files default_quota --value "{{ quota }}"'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:app:set files default_quota --value "{{ quota }}"'
 
 - name: Check Mounts
-  command: 'sudo -u www-data php /var/www/nextcloud/occ files_external:list'
+  become: true
+  become_user: www-data
+  command: 'php /var/www/nextcloud/occ files_external:list'
   register: fsm_out
 
 - name: Mount SMB
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ files_external:create "{{ item.mountpoint }}" "{{ item.storage_type }}" "{{ item.auth_type }}" -c host="{{ item.host }}" -c share="{{ item.share }}" -c root="{{ item.root }}" -c domain="{{ item.domain }}" -c show_hidden="{{ item.show_hidden }}" -c check_acl="{{ item.check_acl }}"'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ files_external:create "{{ item.mountpoint }}" "{{ item.storage_type }}" "{{ item.auth_type }}" -c host="{{ item.host }}" -c share="{{ item.share }}" -c root="{{ item.root }}" -c domain="{{ item.domain }}" -c show_hidden="{{ item.show_hidden }}" -c check_acl="{{ item.check_acl }}"'
   ignore_errors: yes
   with_items: "{{ files_external_mountpoints }}"
   when: not fsm_out.stdout | regex_search('Gemeinsam')
 
 - name: Allow User Mounts
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:app:set files_external allow_user_mounting --value "yes"'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:app:set files_external allow_user_mounting --value "yes"'
 
 - name: Enforce 2FA
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ twofactorauth:enforce --on --group {{ ldapUserFilterGroups }}'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ twofactorauth:enforce --on --group {{ ldapUserFilterGroups }}'
 
-- name: Enable File Scan
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:system:set filesystem_check_changes --value 1'
+- name: Disable File Scan
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:system:set filesystem_check_changes --value 0'
+
+- name: Cron Check File Systems at night
+  become: true
+  cron:
+    name: Nextcloud Filescan Cronjob
+    hour: '4'
+    minute: '7'
+    user: www-data
+    job: "php -f /var/www/nextcloud/occ files:scan --all"
 
 - name: Set Draw.io dark mode
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:app:set drawio DrawioTheme --value dark'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:app:set drawio DrawioTheme --value dark'
 
 - name: Set Theming Settings
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:app:set theming {{ item.key }} --value "{{ item.value }}"'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:app:set theming {{ item.key }} --value "{{ item.value }}"'
   with_items: "{{ theming_config }}"
 
 - name: Set Core Settings
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:app:set core {{ item.key }} --value {{ item.value }}'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:app:set core {{ item.key }} --value {{ item.value }}'
   with_items: "{{ core_config }}"
 
 - name: Set Privacy to Germany
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:app:set privacy readableLocation --value de'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:app:set privacy readableLocation --value de'
 
-- name: Setup Face
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ face:setup -m 1'
-  ignore_errors: yes
-
-- name: add face cronjob
-  cron:
-    name: face cronjob
-    minute: '*/30'
-    user: www-data
-    job: "php -f /var/www/nextcloud/occ face:background_job"
-
-- name: Set face options
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:app:set facerecognition {{ item.key }} --value {{ item.value }}'
-  with_items: "{{ face_config }}"
+- name: Setup Apps
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:app:set {{ item.app }} {{ item.key }} --value "{{ item.value }}"'
+  with_items: "{{ app_config }}"
   ignore_errors: yes
 
 - name: Setup Notify Push
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ notify_push:setup https://{{external_url}}/push'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ notify_push:setup https://{{external_url}}/push'
   ignore_errors: yes
   
 - name: Set Redis Conf
-  shell: 'sudo -u www-data php /var/www/nextcloud/occ config:system:set redis {{ item.key }} --value={{ item.value }}'
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:system:set redis {{ item.key }} --value={{ item.value }}'
   with_items: "{{ redis_conf }}"
+
+- name: Update all Apps
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ app:update --all'
+  ignore_errors: yes
+  
+- name: Add missing indices
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ db:add-missing-indices'
+  ignore_errors: yes
   

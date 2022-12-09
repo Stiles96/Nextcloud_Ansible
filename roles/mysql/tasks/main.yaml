@@ -12,3 +12,19 @@
 
 - name: Permit User to Database
   shell: mysql -e "GRANT ALL ON {{ db_name }}.* TO '{{ db_user }}'@'localhost';"
+
+#- name: Create Database
+#  mysql_db:
+#    name: "{{ db_name }}"
+#    collation: utf8mb4_general_ci
+#    encoding: utf8mb4
+#    state: present
+#    check_implicit_admin: yes
+#
+#- name: Create User
+#  community.mysql.mysql_user:
+#    name: "{{ db_user }}"
+#    password: "{{ db_pw }}"
+#    priv: '{{ db_name }}.*:ALL'
+#    state: present
+#    check_implicit_admin: yes

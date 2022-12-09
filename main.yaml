@@ -6,6 +6,18 @@
     - system
   roles:
     - system
+  vars_files:
+    - vars.yaml
+
+- name: Setup Docker
+  become: true
+  hosts: all
+  tags:
+    - docker
+    - monitoring
+    - onlyoffice
+  roles:
+    - docker
 
 - name: Setup Apache2
   become: true
@@ -29,7 +41,6 @@
     - passwords.yaml
 
 - name: Setup Nextcloud
-  become: true
   hosts: nextcloud
   tags:
     - nextcloud
@@ -40,12 +51,45 @@
     - passwords.yaml
 
 - name: Setup OnlyOffice
-  become: true
   hosts: nextcloud
   tags:
     - onlyoffice
   roles:
-    - docker
     - onlyoffice
+  vars_files:
+    - vars.yaml
+
+- name: Nextcloud Exporter
+  hosts: nextcloud
+  tags:
+    - monitoring
+  roles:
+    - nextcloud_exporter
+  vars_files:
+    - vars.yaml
+    - passwords.yaml
+
+- name: Node Exporter
+  hosts: all
+  become: yes
+  tags:
+    - monitoring
+    - node-exporter
+  vars_files:
+    - passwords.yaml
+  vars:
+    node_exporter_web_listen_address: "0.0.0.0:9100"
+    node_exporter_basic_auth_users:
+      monitoring: "{{ monitoring_password }}"
+  roles:
+    - cloudalchemy.node_exporter
+
+- name: Configure Monitoring Server
+  become: true
+  hosts: monitoring
+  tags:
+    - monitoring
+  roles:
+    - monitoring
   vars_files:
     - vars.yaml

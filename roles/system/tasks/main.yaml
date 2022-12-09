@@ -1,4 +1,21 @@
 ---
+- name: add pdlib key
+  apt_key:
+    url: "{{ item }}"
+    state: present
+  with_items: 
+    - https://repo.delellis.com.ar/repo.gpg.key
+
+- name: add additional repos
+  apt_repository:
+    repo: "{{ item }}"
+    validate_certs: true
+    update_cache: true
+    state: present
+  with_items:
+    - deb https://repo.delellis.com.ar {{ ansible_distribution_release }} {{ ansible_distribution_release }}
+    - ppa:ondrej/php
+
 - name: Install Packages Apache 2
   apt:
     pkg:
@@ -16,47 +33,62 @@
     state: present
     update_cache: yes
 
-- name: Install Packages PHP
-  apt:
-    pkg:
-    - libapache2-mod-php7.4
-    - php7.4-gd
-    - php7.4-mysql
-    - php7.4-curl
-    - php7.4-mbstring
-    - php7.4-intl
-    - php7.4-gmp
-    - php7.4-bcmath
-    - php-imagick
-    - php7.4-xml
-    - php7.4-zip
-    - php7.4-ldap
-    - php7.4-opcache
-    - php7.4-cli
-    - php7.4-apcu
-    - imagemagick
-    - libmagickcore-6.q16-6-extra
-    - php7.4-fpm
-    - redis-server
-    - php7.4-redis
-    - php7.4-pdlib
-    - php7.4-bz2
-    state: present
-    update_cache: yes
-
 - name: Install Packages PIP and SMB
   apt:
     pkg:
     - python3-pip
+#    - smbclient
+#    - libsmbclient-php
     - php-pear
-    - php7.4-dev
     - libsmbclient-dev
+    - software-properties-common
     update_cache: yes
+
+- name: Install Packages PHP
+  apt:
+    pkg:
+    - libapache2-mod-php{{ php_version }}
+    - php{{ php_version }}-gd
+    - php{{ php_version }}-mysql
+    - php{{ php_version }}-curl
+    - php{{ php_version }}-mbstring
+    - php{{ php_version }}-intl
+    - php{{ php_version }}-gmp
+    - php{{ php_version }}-bcmath
+    - php{{ php_version }}-imagick
+    - php{{ php_version }}-xml
+    - php{{ php_version }}-zip
+    - php{{ php_version }}-ldap
+    - php{{ php_version }}-opcache
+    - php{{ php_version }}-cli
+    - php{{ php_version }}-apcu
+    - imagemagick
+    - libmagickcore-6.q16-6-extra
+    - php{{ php_version }}-fpm
+    - redis-server
+    - php{{ php_version }}-redis
+#    - php7.4-pdlib
+    - php{{ php_version }}-bz2
+    - php{{ php_version }}-dev
+    - php{{ php_version }}-smbclient
+    state: present
+    update_cache: yes
+
+- name: Remove old PHP
+  apt:
+    pkg:
+    - libapache2-mod-php{{ old_php_version }}
+    - php{{ old_php_version }}*
+    state: absent
 
 - name: Install libsmbclient-php pear package
   community.general.pear:
     name: smbclient
     state: present
+  ignore_errors: yes
+
+- name: Retrty Install
+  shell: 'sudo pecl install smbclient'
   ignore_errors: yes
 
 - name: Create Folder
@@ -68,10 +100,36 @@
     state: directory
     recurse: yes
   with_items:
-    - /var/www/nextcloud
-    - /var/www/nextcloud/data
-    - /var/www/nextcloud/data/skeleton
-    - /var/www/nextcloud/data/skeleton/External
+    - "/var/www/nextcloud"
+    - "{{ data_directory }}"
+    - "{{ data_directory }}/skeleton"
+    - "{{ data_directory }}/skeleton/External"
+#    - /tmp/apc
+
+#- name: Add apc to fstab
+#  lineinfile:
+#    path: /etc/fstab
+#    regexp: "^ramfs"
+#    line: "ramfs   /tmp/apc     ramfs   defaults        0       0"
+#    state: present
+#  register: fstab
+#
+#- name: Mount all
+#  shell: "mount -a"
+#  when: fstab.changed
+
+- name: Add nextcloud_data to fstab
+  lineinfile:
+    path: /etc/fstab
+    regexp: "^{{ ext_device }}"
+    line: "{{ ext_device }} /mnt/nextcloud_data ext4 defaults 0 0"
+    state: present
+  register: fstab
+  when: ext_device is defined
+
+- name: Mount all
+  shell: "mount -a"
+  when: fstab.changed
 
 - name: Add OnlyOffice apt key
   ansible.builtin.apt_key:

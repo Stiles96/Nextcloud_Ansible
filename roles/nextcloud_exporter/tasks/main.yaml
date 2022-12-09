@@ -1,0 +1,22 @@
+---
+- name: Set Nextcloud monitoring token
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:app:set serverinfo token --value={{ nc_monitoring_token }}'
+
+- name: start a nextcloud-exporter container
+  become: true
+  docker_container:
+    name: nextcloud-exporter
+    image: xperimental/nextcloud-exporter:latest
+    state: started
+    restart: yes
+    restart_policy: always
+    interactive: true
+    tty: yes
+    ports:
+     - "9205:9205"
+    env:
+      NEXTCLOUD_SERVER: 'https://{{ external_url }}'
+      NEXTCLOUD_AUTH_TOKEN:  '{{ nc_monitoring_token }}'
+      NEXTCLOUD_TLS_SKIP_VERIFY: 'true'

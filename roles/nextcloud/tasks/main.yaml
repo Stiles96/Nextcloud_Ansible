@@ -16,12 +16,16 @@
 - name: Set Permissions
   become: true
   file:
-    path: /var/www/nextcloud
+    path: '{{ item }}'
     owner: www-data
     group: www-data
     mode: '0775'
     state: directory
     recurse: yes
+  with_items:
+    - /var/www/nextcloud
+    - "{{ data_directory }}"
+
 
 - name: Install Nextcloud
   become: true
@@ -36,6 +40,12 @@
       --admin-pass {{ admin_pw }}'
   ignore_errors: yes
 
+- name: Set Redis Conf
+  become: true
+  become_user: www-data
+  shell: 'php /var/www/nextcloud/occ config:system:set redis {{ item.key }} --value={{ item.value }}'
+  with_items: "{{ redis_conf }}"
+  
 - name: Set Nextcloud config
   become: true
   become_user: www-data
@@ -217,12 +227,6 @@
   become_user: www-data
   shell: 'php /var/www/nextcloud/occ notify_push:setup https://{{external_url}}/push'
   ignore_errors: yes
-  
-- name: Set Redis Conf
-  become: true
-  become_user: www-data
-  shell: 'php /var/www/nextcloud/occ config:system:set redis {{ item.key }} --value={{ item.value }}'
-  with_items: "{{ redis_conf }}"
 
 - name: Update all Apps
   become: true

@@ -12,11 +12,11 @@ trusted_domains:
   - cloud.henkelmann.ddnss.de
   - cloud.chaoslab.ddnss.de
   - cloud.chaoscomputer.ddnss.de
-  - 10.97.166.11
+  - 10.96.166.15
   - 127.0.0.1
   - "::1"
   - 10.96.166.12
-  - w-cloud-server.zuhause.local
+  - cloud02-server.zuhause.local
   - w-cloud.he-it.eu
   - cloud-hamnet.he-it.eu
 
@@ -64,8 +64,8 @@ nc_config:
   - { key: "allow_local_remote_servers", value: '--value=true' }
   - { key: "memcache.locking", value: '--value="\OC\Memcache\Redis"'}
   - { key: "memcache.local", value: '--value="\OC\Memcache\APCu"'}
-  - { key: "skeletondirectory", value: '--value="/mnt/nextcloud_data/data/skeleton"'}
-  - { key: "datadirectory", value: '--value="/mnt/nextcloud_data/data/"'}
+  - { key: "skeletondirectory", value: '--value="{{ data_directory }}/skeleton"'}
+  - { key: "datadirectory", value: '--value="{{ data_directory }}"'}
 
 hasMemberOfFilterSupport     : 1                                                                                                                                                                                                                                      
 homeFolderNamingRule         :                                                                                                                                                                                                                                        

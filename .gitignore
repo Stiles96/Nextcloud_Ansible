@@ -8,5 +8,3 @@ collections/*
 !collections/requirements.yml
 .vscode
 .vagrant
-*.key
-*.crt

@@ -1,1 +1,71 @@
 data_directory: /var/www/nextcloud/data
+
+nc_mail_config:
+  - { key: "mail_from_address", value: "--value={{ mail_from }}" }
+  - { key: "mail_smtpmode",     value: "--value={{ mail_smtpmode }}" }
+  - { key: "mail_smtpauthtype", value: "--value={{ mail_smtpauthtype }}" }
+  - { key: "mail_domain",       value: "--value={{ mail_domain }}" }
+  - { key: "mail_smtpname",     value: "--value={{ mail_smtpname }}" }
+  - { key: "mail_smtpsecure",   value: "--value={{ mail_smtpsecure }}" }
+  - { key: "mail_smtpauth",     value: "--value={{ mail_smtpauth }}" }
+  - { key: "mail_smtphost",     value: "--value={{ mail_smtphost }}" }
+  - { key: "mail_smtpport",     value: "--value={{ mail_smtpport }}" }
+  - { key: "mail_smtppassword", value: "--value={{ mail_smtppwd }}" }
+
+nc_ldap_config:
+  - { key: "hasMemberOfFilterSupport",       value: "{{ hasMemberOfFilterSupport      }}" }
+  - { key: "homeFolderNamingRule"          , value: "{{ homeFolderNamingRule          }}" }
+  - { key: "lastJpegPhotoLookup"           , value: "{{ lastJpegPhotoLookup           }}" }
+  - { key: "ldapAgentName"                 , value: "{{ ldapAgentName                 }}" }
+  - { key: "ldapAgentPassword"             , value: "{{ ldapAgentPassword             }}" }
+  - { key: "ldapAttributesForGroupSearch"  , value: "{{ ldapAttributesForGroupSearch  }}" }
+  - { key: "ldapAttributesForUserSearch"   , value: "{{ ldapAttributesForUserSearch   }}" }
+  - { key: "ldapBackupHost"                , value: "{{ ldapBackupHost                }}" }
+  - { key: "ldapBackupPort"                , value: "{{ ldapBackupPort                }}" }
+  - { key: "ldapBase"                      , value: "{{ ldapBase                      }}" }
+  - { key: "ldapBaseGroups"                , value: "{{ ldapBaseGroups                }}" }
+  - { key: "ldapBaseUsers"                 , value: "{{ ldapBaseUsers                 }}" }
+  - { key: "ldapCacheTTL"                  , value: "{{ ldapCacheTTL                  }}" }
+  - { key: "ldapConfigurationActive"       , value: "{{ ldapConfigurationActive       }}" }
+  - { key: "ldapDefaultPPolicyDN"          , value: "{{ ldapDefaultPPolicyDN          }}" }
+  - { key: "ldapDynamicGroupMemberURL"     , value: "{{ ldapDynamicGroupMemberURL     }}" }
+  - { key: "ldapEmailAttribute"            , value: "{{ ldapEmailAttribute            }}" }
+  - { key: "ldapExperiencedAdmin"          , value: "{{ ldapExperiencedAdmin          }}" }
+  - { key: "ldapExpertUUIDGroupAttr"       , value: "{{ ldapExpertUUIDGroupAttr       }}" }
+  - { key: "ldapExpertUUIDUserAttr"        , value: "{{ ldapExpertUUIDUserAttr        }}" }
+  - { key: "ldapExpertUsernameAttr"        , value: "{{ ldapExpertUsernameAttr        }}" }
+  - { key: "ldapExtStorageHomeAttribute"   , value: "{{ ldapExtStorageHomeAttribute   }}" }
+  - { key: "ldapGidNumber"                 , value: "{{ ldapGidNumber                 }}" }
+  - { key: "ldapGroupDisplayName"          , value: "{{ ldapGroupDisplayName          }}" }
+  - { key: "ldapGroupFilter"               , value: "{{ ldapGroupFilter               }}" }
+  - { key: "ldapGroupFilterGroups"         , value: "{{ ldapGroupFilterGroups         }}" }
+  - { key: "ldapGroupFilterMode"           , value: "{{ ldapGroupFilterMode           }}" }
+  - { key: "ldapGroupFilterObjectclass"    , value: "{{ ldapGroupFilterObjectclass    }}" }
+  - { key: "ldapGroupMemberAssocAttr"      , value: "{{ ldapGroupMemberAssocAttr      }}" }
+  - { key: "ldapHost"                      , value: "{{ ldapHost                      }}" }
+  - { key: "ldapIgnoreNamingRules"         , value: "{{ ldapIgnoreNamingRules         }}" }
+  - { key: "ldapLoginFilter"               , value: "{{ ldapLoginFilter               }}" }
+  - { key: "ldapLoginFilterAttributes"     , value: "{{ ldapLoginFilterAttributes     }}" }
+  - { key: "ldapLoginFilterEmail"          , value: "{{ ldapLoginFilterEmail          }}" }
+  - { key: "ldapLoginFilterMode"           , value: "{{ ldapLoginFilterMode           }}" }
+  - { key: "ldapLoginFilterUsername"       , value: "{{ ldapLoginFilterUsername       }}" }
+  - { key: "ldapMatchingRuleInChainState"  , value: "{{ ldapMatchingRuleInChainState  }}" }
+  - { key: "ldapNestedGroups"              , value: "{{ ldapNestedGroups              }}" }
+  - { key: "ldapOverrideMainServer"        , value: "{{ ldapOverrideMainServer        }}" }
+  - { key: "ldapPagingSize"                , value: "{{ ldapPagingSize                }}" }
+  - { key: "ldapPort"                      , value: "{{ ldapPort                      }}" }
+  - { key: "ldapQuotaAttribute"            , value: "{{ ldapQuotaAttribute            }}" }
+  - { key: "ldapQuotaDefault"              , value: "{{ ldapQuotaDefault              }}" }
+  - { key: "ldapTLS"                       , value: "{{ ldapTLS                       }}" }
+  - { key: "ldapUserAvatarRule"            , value: "{{ ldapUserAvatarRule            }}" }
+  - { key: "ldapUserDisplayName"           , value: "{{ ldapUserDisplayName           }}" }
+  - { key: "ldapUserDisplayName2"          , value: "{{ ldapUserDisplayName2          }}" }
+  - { key: "ldapUserFilter"                , value: "{{ ldapUserFilter                }}" }
+  - { key: "ldapUserFilterGroups"          , value: "{{ ldapUserFilterGroups          }}" }
+  - { key: "ldapUserFilterMode"            , value: "{{ ldapUserFilterMode            }}" }
+  - { key: "ldapUserFilterObjectclass"     , value: "{{ ldapUserFilterObjectclass     }}" }
+  - { key: "ldapUuidGroupAttribute"        , value: "{{ ldapUuidGroupAttribute        }}" }
+  - { key: "ldapUuidUserAttribute"         , value: "{{ ldapUuidUserAttribute         }}" }
+  - { key: "turnOffCertCheck"              , value: "{{ turnOffCertCheck              }}" }
+  - { key: "turnOnPasswordChange"          , value: "{{ turnOnPasswordChange          }}" }
+  - { key: "useMemberOfToDetectMembership" , value: "{{ useMemberOfToDetectMembership }}" }

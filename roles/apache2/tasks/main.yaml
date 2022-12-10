@@ -56,12 +56,14 @@
     - php{{ old_php_version }}
     - mpm_prefork
   notify: "Restart Apache"
+  ignore_errors: yes
 
 - name: Disable old php-fpm
   shell: /usr/sbin/a2disconf {{ item }}
   with_items:
     - php{{ old_php_version }}-fpm
   notify: "Restart Apache"
+  ignore_errors: yes
 
 - name: Enable php-fpm
   shell: /usr/sbin/a2enconf {{ item }}
